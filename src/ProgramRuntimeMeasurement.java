@@ -1,43 +1,54 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class ProgramRuntimeMeasurement {
+
+
+    static String getTodayDate() {
+        Date today = new Date();
+        Locale currentLocale = new Locale("KOREAN", "KOREA");
+        String pattern = "yyyyMMddHHmmss"; //hhmmss로 시간,분,초
+        SimpleDateFormat formatter = new SimpleDateFormat(pattern, currentLocale);
+        return formatter.format(today);
+    }
+
 
     public static void main(String[] args) {
         //Name of process to track
         String targetProcessName = "Cyberpunk2077.exe";
         try {
             //take all the list of processes running currently
-            Process processListProcess = new ProcessBuilder("tasklist").start();
+            Process processListProcess = new ProcessBuilder("wmic", "process", "get", "Name", ",", "CreationDate",",","processid").start();
             //ProcessBuilder? : RUN Window command in JAVA.
             //If there are more than one input command seperate with spaces.
             //Ex) new ProcessBuilder("/bin/sh", "-c", cmd).start();
             BufferedReader reader = new BufferedReader(new InputStreamReader(processListProcess.getInputStream()));
             String line;
-            int targetProcessPID = -1;  // 초기값으로 임의의 음수 설정
             while ((line = reader.readLine()) != null) {
-                if (line.contains(targetProcessName)) {
-                    String[] tokens = line.split("\\s+");
-                    targetProcessPID = Integer.parseInt(tokens[1]);
-                    break;
+                if ((line.contains("CreationDate")) || (line.contains("Name"))) {
+                    continue;
+                }
+                else if(line.equals("")) {
+                    continue;
+                }
+                else {
+                    String name = line.substring(27);
+                    System.out.println(name);
+                    if(name.contains(targetProcessName)) {
+                        System.out.println("Gottcha");
+                        System.out.println(line);//생성날짜, 이름, PID순서
+                        System.out.println(line.substring(0, 14));//이건 생성날짜 추출
+                        System.out.println(line.substring(27,59)); //이건 게임이름 추출
+                        System.out.println("ID:" + line.substring(59));//이건 PID 추출
+                    }
                 }
             }
-
-            // 프로세스가 종료될 때까지 대기
-            processListProcess.waitFor();
-
-            if (targetProcessPID != -1) {
-                System.out.println("프로세스 '" + targetProcessName + "'의 PID: " + targetProcessPID);
-
-                // taskkill 명령어로 프로세스 종료 (예시, 주의: 이 부분을 실제로 사용할 때에는 주의가 필요합니다.)
-                Process killProcess = new ProcessBuilder("taskkill", "/F", "/PID", String.valueOf(targetProcessPID)).start();
-                killProcess.waitFor();
-            } else {
-                System.out.println("프로세스 '" + targetProcessName + "'가 실행 중이 아닙니다.");
-            }
-
-        } catch (IOException | InterruptedException e) {
+            System.out.println("Today Date:" + getTodayDate());
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
