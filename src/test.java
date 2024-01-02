@@ -1,9 +1,11 @@
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class test {
     public static void main(String[] args) {
+        //주석 부분은 다 필요 없음..헷갈려서 계속 이것저것 치다가 안 지우고 내부려 둔 것
 //        // 현재 날짜와 시간을 가져오기
 //        LocalDateTime now = LocalDateTime.now();
 //
@@ -55,7 +57,7 @@ public class test {
         LocalDateTime now = LocalDateTime.now();
         String now_format_Str = now.format(format_type);
         LocalDateTime current_time = LocalDateTime.parse(now_format_Str, format_type);
-        System.out.println(current_time);
+        System.out.println(now);
 
 
         String creation_time = "20240102215030";
@@ -65,5 +67,10 @@ public class test {
         Duration elapsed_time = Duration.between(LDT_creation_time, current_time);
         System.out.println(elapsed_time);
         System.out.println(elapsed_time.getSeconds());
+
+        LocalTime time_passed = LocalTime.of(0,0,0).plusSeconds(elapsed_time.getSeconds());
+        System.out.println(time_passed.getHour());
+        System.out.println(time_passed.getMinute());
+        System.out.println(time_passed.getSecond());
     }
 }
