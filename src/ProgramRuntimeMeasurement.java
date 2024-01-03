@@ -38,7 +38,7 @@ public class ProgramRuntimeMeasurement {
     public static void main(String[] args) {
         boolean found = false;
         //Name of process to track
-        String targetProcessName = "WINWORD.EXE";
+        String targetProcessName = "";
         try {
             //take all the list of processes running currently
             Process processListProcess = new ProcessBuilder("wmic", "process", "get", "Name", ",", "CreationDate", ",", "processid").start();
@@ -54,14 +54,14 @@ public class ProgramRuntimeMeasurement {
                     continue;
                 } else {
                     String name = line.substring(27);
-                    if (name.contains(targetProcessName)) {
+                    if (name.toLowerCase().contains(targetProcessName.toLowerCase())) {
                         System.out.println("Found the program.");
-                        //                        System.out.println(line);//생성날짜, 이름, PID순서
-                        System.out.println("This Program started at : " + line.substring(0, 14));//이건 생성날짜 추출
-                        //                        System.out.println(line.substring(27, 57)); //이건 게임이름 추출
-                        //                        System.out.println("ID:" + line.substring(57));//이건 PID 추출
+//                        System.out.println(line);//생성날짜, 이름, PID순서
+//                        System.out.println("This Program started at : " + line.substring(0, 14));//이건 생성날짜 추출
+//                        System.out.println(line.substring(27, 57)); //이건 게임이름 추출
+                        System.out.println("ID:" + line.substring(57));//이건 PID 추출
                         LocalTime time = running_time_measure(line.substring(0, 14));
-                        if(time.getSecond() >=1) {//##################현재는 1초만 지나도 끄게 되어있음. 추후 변경해야함################
+                        if (time.getSecond() >= 1) {//##################현재는 1초만 지나도 끄게 되어있음. 추후 변경해야함################
                             Process kill = new ProcessBuilder("taskkill", "/im", targetProcessName).start();
                             System.out.println("Sent the message to turn off the program");
                         }
